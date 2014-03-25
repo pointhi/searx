@@ -1,0 +1,31 @@
+<div class="result {{ result.class }}">
+
+  {% if result['favicon'] %}
+    <img width="14" height="14" class="favicon" src="static/img/icon_{{result['favicon']}}.ico" />
+  {% endif %}
+
+  <div>
+    <h3 class="result_title"><a href="{{ result.url }}">{{ result.title|safe }}</a></h3>
+    
+    <table>
+    <th>Date</th>
+    <th>Temperature</th>
+    <th>Humidity</th>
+    <th>Pressure</th>
+    <th>Windspeed</th>
+    <th>Windangle</th>
+    {% for data in result.data %}
+        <tr>
+            <td>{{ data.datetime }}</td>
+            <td>{{ data.temperature }} °C</td>
+            <td>{{ data.humidity }}%</td>
+            <td>{{ data.pressure }} hPa</td>
+            <td>{{ data.windspeed }} km/h</td>
+            <td>{{ data.windangle }}°</td>
+        </tr>
+    {% endfor %}
+    </table>
+	
+    <p class="url">{{ result.pretty_url }}</p>
+  </div>
+</div>
