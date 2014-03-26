@@ -1,4 +1,4 @@
-<div class="result {{ result.class }}">
+<div class="result weather {{ result.class }}">
 
   {% if result['favicon'] %}
     <img width="14" height="14" class="favicon" src="static/img/icon_{{result['favicon']}}.ico" />
@@ -6,6 +6,14 @@
 
   <div>
     <h3 class="result_title"><a href="{{ result.url }}">{{ result.title|safe }}</a></h3>
+    
+    <div class="weathergraph">
+        <div class="placeholder" style="width:600px;height:300px;"></div>
+        <div id="clickInfo"></div>
+        <noscript>
+            <p>{{ _('Please activate JS to use full functionality') }}</p>
+        </noscript>
+    </div>
     
     <table>
     <th>Date</th>
@@ -15,6 +23,7 @@
     <th>Windspeed</th>
     <th>Windangle</th>
     {% for data in result.data %}
+        {% if last_printed_date != data.datetime.date() %}
         <tr>
             <td>{{ data.datetime }}</td>
             <td>{{ data.temperature }} °C</td>
@@ -23,9 +32,16 @@
             <td>{{ data.windspeed }} km/h</td>
             <td>{{ data.windangle }}°</td>
         </tr>
+        {% endif %}
+        {% set last_printed_date = data.datetime.date() %}
+        
     {% endfor %}
     </table>
 	
     <p class="url">{{ result.pretty_url }}</p>
+    
+    <script class="raw_data" type="text/json">
+        {{ result.data|tojson|safe }}
+    </script>
   </div>
 </div>
