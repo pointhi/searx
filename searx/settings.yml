@@ -73,7 +73,7 @@ engines:
   - name : openweathermap
     engine : openweathermap
     shortcut : owm
-    timeout: 5.0
+    timeout: 8.0
     
   - name : piratebay
     engine : piratebay

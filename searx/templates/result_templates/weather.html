@@ -1,3 +1,7 @@
+{% macro input(name, value='', type='text', size=20) -%}
+    <input type="{{ type }}" name="{{ name }}" value="{{
+        value|e }}" size="{{ size }}">
+{%- endmacro %}
 <div class="result weather {{ result.class }}">
 
   {% if result['favicon'] %}
@@ -15,26 +19,39 @@
         </noscript>
     </div>
     
+    {% set current_day_date = result.data[0].datetime.date() %}
+    {% set current_day_temp_min = result.data[0].temperature %}
+    {% set current_day_temp_max = result.data[0].temperature %}
+    
     <table>
     <th>Date</th>
-    <th>Temperature</th>
-    <th>Humidity</th>
-    <th>Pressure</th>
-    <th>Windspeed</th>
-    <th>Windangle</th>
+    <th>Temperature max</th>
+    <th>Temperature min</th>
     {% for data in result.data %}
-        {% if last_printed_date != data.datetime.date() %}
-        <tr>
-            <td>{{ data.datetime }}</td>
-            <td>{{ data.temperature }} °C</td>
-            <td>{{ data.humidity }}%</td>
-            <td>{{ data.pressure }} hPa</td>
-            <td>{{ data.windspeed }} km/h</td>
-            <td>{{ data.windangle }}°</td>
-        </tr>
+        {% if data.temperature < current_day_temp_min %}
+            {% set current_day_temp_min = data.temperature %}
         {% endif %}
-        {% set last_printed_date = data.datetime.date() %}
+        {% if data.temperature > current_day_temp_max %}
+            {% set current_day_temp_max = data.temperature %}
+        {% endif %}
         
+        {% if current_day_date != data.datetime.date()%}
+            <tr>
+                <td>{{ current_day_date }}</td>
+                <td>{{ current_day_temp_max }} °C</td>
+                <td>{{ current_day_temp_min }} °C</td>
+            </tr>
+            {% set current_day_temp_min = data.temperature %}
+            {% set current_day_temp_max = data.temperature %}
+            {% set current_day_date = data.datetime.date() %}
+        {% endif %}
+        {%if loop.last %}
+            <tr>
+                <td>{{ current_day_date }}</td>
+                <td>{{ current_day_temp_max }} °C</td>
+                <td>{{ current_day_temp_min }} °C</td>
+            </tr>
+        {% endif %}
     {% endfor %}
     </table>
 	
