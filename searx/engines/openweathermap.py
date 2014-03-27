@@ -62,6 +62,12 @@ def response(resp):
         tmp_data['rain'] = result.get('rain', {}).get('3h', None) # 3h, mm
         tmp_data['snow'] = result.get('snow', {}).get('3h', None) # 3h, mm
         
+        if tmp_data['rain']:
+            tmp_data['rain'] /= 3
+            
+        if tmp_data['snow']:
+            tmp_data['snow'] /= 3
+        
         tmp_result['data'].append(tmp_data)
         
     #print tmp_result

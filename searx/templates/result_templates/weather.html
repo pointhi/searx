@@ -24,6 +24,8 @@
     {% set current_day_temp_max = result.data[0].temperature %}
     
     <table>
+    <th>Picture</th>
+    <th>Description</th>
     <th>Date</th>
     <th>Temperature max</th>
     <th>Temperature min</th>
@@ -37,16 +39,20 @@
         
         {% if current_day_date != data.datetime.date()%}
             <tr>
+                <td><img src="{% if data.img %}{{ data.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if data.description %} alt="{{ data.description }}"{% endif %}/></td>
+                <td>{% if data.description %}{{ data.description }}{% endif %}</td>
                 <td>{{ current_day_date }}</td>
                 <td>{{ current_day_temp_max }} °C</td>
                 <td>{{ current_day_temp_min }} °C</td>
             </tr>
             {% set current_day_temp_min = data.temperature %}
             {% set current_day_temp_max = data.temperature %}
-            {% set current_day_date = data.datetime.date() %}
+            {% set current_day_date = data.datetime.date() %}      
         {% endif %}
         {%if loop.last %}
             <tr>
+                <td><img src="{% if data.img %}{{ data.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if data.description %} alt="{{ data.description }}"{% endif %}/></td>
+                <td>{% if data.description %}{{ data.description }}{% endif %}</td>
                 <td>{{ current_day_date }}</td>
                 <td>{{ current_day_temp_max }} °C</td>
                 <td>{{ current_day_temp_min }} °C</td>

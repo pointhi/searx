@@ -26,7 +26,7 @@ import json
 import cStringIO
 import os
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from itertools import chain
 from flask import (
     Flask, request, render_template, url_for, Response, make_response,
@@ -175,6 +175,53 @@ def index():
                 result['pubdate'] = result['publishedDate']\
                     .strftime('%a, %d %b %Y %H:%M:%S %z')
                 result['publishedDate'] = format_date(result['publishedDate'])
+
+        if result.get('template', None) == 'weather.html':
+            for weatherdata in result['data']:
+                if weatherdata['datetime'].time() < time(19) and weatherdata['datetime'].time() > time(5):
+                    daynight = 'day'
+                else:
+                    daynight = 'night'
+            
+                if weatherdata['rain'] > 0.1 and weatherdata['snow'] > 0.1:
+                    weatherdata['img'] = 'static/img/weather/rain_snow.png'
+                    weatherdata['description'] = gettext('rain and snowfall')
+                elif weatherdata['rain'] > 0:
+                    if weatherdata['rain'] <= 0.5:
+                        weatherdata['img'] = 'static/img/weather/rain_05.png'
+                        weatherdata['description'] = gettext('slightly rainy')
+                    elif weatherdata['rain'] <= 4:
+                        weatherdata['img'] = 'static/img/weather/rain_4.png'
+                        weatherdata['description'] = gettext('rainy')
+                    else:
+                        weatherdata['img'] = 'static/img/weather/rain_10.png'
+                        weatherdata['description'] = gettext('strong rainy')
+                elif weatherdata['snow'] > 0:
+                    if weatherdata['snow'] <= 0.5:
+                        weatherdata['img'] = 'static/img/weather/snow_05.png'
+                        weatherdata['description'] = gettext('slightly snowfall')
+                    elif weatherdata['snow'] <= 4:
+                        weatherdata['img'] = 'static/img/weather/snow_4.png'
+                        weatherdata['description'] = gettext('snowfall')
+                    else:
+                        weatherdata['img'] = 'static/img/weather/snow_10.png'
+                        weatherdata['description'] = gettext('strong snowfall')
+                else:
+                    if weatherdata['clouds'] <= 10:
+                        weatherdata['img'] = 'static/img/weather/clouds_0_' + daynight + '.png'
+                        weatherdata['description'] = gettext('clear')
+                    elif weatherdata['clouds'] <= 25:
+                        weatherdata['img'] = 'static/img/weather/clouds_25_' + daynight + '.png'
+                        weatherdata['description'] = gettext('slightly cloudy')
+                    elif weatherdata['clouds'] <= 50:
+                        weatherdata['img'] = 'static/img/weather/clouds_50_' + daynight + '.png'
+                        weatherdata['description'] = gettext('cloudy')
+                    elif weatherdata['clouds'] <= 75:
+                        weatherdata['img'] = 'static/img/weather/clouds_75_' + daynight + '.png'
+                        weatherdata['description'] = gettext('mostly cloudy')
+                    else:
+                        weatherdata['img'] = 'static/img/weather/clouds_100.png'
+                        weatherdata['description'] = gettext('completely cloudy')
 
     if search.request_data.get('format') == 'json':
         return Response(json.dumps({'query': search.query,
