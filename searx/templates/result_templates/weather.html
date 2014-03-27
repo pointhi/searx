@@ -19,6 +19,7 @@
         </noscript>
     </div>
     
+    {% set current_day_noon = result.data[0] %}
     {% set current_day_date = result.data[0].datetime.date() %}
     {% set current_day_temp_min = result.data[0].temperature %}
     {% set current_day_temp_max = result.data[0].temperature %}
@@ -36,24 +37,28 @@
         {% if data.temperature > current_day_temp_max %}
             {% set current_day_temp_max = data.temperature %}
         {% endif %}
+        {% if data.datetime.time().hour <= 13 and current_day_date == data.datetime.date() %}
+            {% set current_day_noon = data %}
+        {% endif %}
         
         {% if current_day_date != data.datetime.date()%}
             <tr>
-                <td><img src="{% if data.img %}{{ data.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if data.description %} alt="{{ data.description }}"{% endif %}/></td>
+                <td><img src="{% if current_day_noon.img %}{{ current_day_noon.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if data.description %} alt="{{ current_day_noon.description }}"{% endif %}/></td>
                 <td>{% if data.description %}{{ data.description }}{% endif %}</td>
-                <td>{{ current_day_date }}</td>
+                <td>{{ current_day_noon.datetime }}</td>
                 <td>{{ current_day_temp_max }} °C</td>
                 <td>{{ current_day_temp_min }} °C</td>
             </tr>
+            {% set current_day_noon = data %}
             {% set current_day_temp_min = data.temperature %}
             {% set current_day_temp_max = data.temperature %}
-            {% set current_day_date = data.datetime.date() %}      
+            {% set current_day_date = data.datetime.date() %}
         {% endif %}
         {%if loop.last %}
             <tr>
-                <td><img src="{% if data.img %}{{ data.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if data.description %} alt="{{ data.description }}"{% endif %}/></td>
+                <td><img src="{% if current_day_noon.img %}{{ current_day_noon.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if data.description %} alt="{{ current_day_noon.description }}"{% endif %}/></td>
                 <td>{% if data.description %}{{ data.description }}{% endif %}</td>
-                <td>{{ current_day_date }}</td>
+                <td>{{ current_day_noon.datetime }}</td>
                 <td>{{ current_day_temp_max }} °C</td>
                 <td>{{ current_day_temp_min }} °C</td>
             </tr>

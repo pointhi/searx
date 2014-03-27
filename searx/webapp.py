@@ -178,7 +178,7 @@ def index():
 
         if result.get('template', None) == 'weather.html':
             for weatherdata in result['data']:
-                if weatherdata['datetime'].time() < time(19) and weatherdata['datetime'].time() > time(5):
+                if weatherdata['datetime'].time() < time(18) and weatherdata['datetime'].time() > time(5):
                     daynight = 'day'
                 else:
                     daynight = 'night'
