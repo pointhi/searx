@@ -39,6 +39,8 @@ def response(resp):
     tmp_result['url'] = 'http://openweathermap.org/city/' + str(raw_search_result['city']['id'])
     tmp_result['content'] = ''
     tmp_result['data'] = []
+    tmp_result['city'] = raw_search_result['city']['name']
+    tmp_result['country'] = raw_search_result['city']['country']
     tmp_result['template'] = 'weather.html'
 
     # http://bugs.openweathermap.org/projects/api/wiki/Weather_Data

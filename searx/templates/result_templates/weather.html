@@ -1,6 +1,10 @@
-{% macro input(name, value='', type='text', size=20) -%}
-    <input type="{{ type }}" name="{{ name }}" value="{{
-        value|e }}" size="{{ size }}">
+{% macro weather_icon(temp_max, temp_min, img, description='', day='') -%}
+            <div class="weather_overview_item">
+                <p class="weather_day">{{ day.time()|safe }}</p>
+                <img class="weather_icon" src="{% if img %}{{ img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if description %} alt="{{ description|safe }}"{% endif %}/>
+                <p class="weather_description">{% if description %}{{ description|safe }}{% endif %}</p>
+                <div class="weather_temperature"><span class="weather_tmp_max">{{ temp_max|int }}&deg;C</span> <span class="weather_tmp_min">{{ temp_min|int }}&deg;C</span></div>
+            </div>
 {%- endmacro %}
 <div class="result weather {{ result.class }}">
 
@@ -10,6 +14,27 @@
 
   <div>
     <h3 class="result_title"><a href="{{ result.url }}">{{ result.title|safe }}</a></h3>
+    
+    <div class="weather_selected">
+        <h3>{{ result.city }}</h3><h4>{{ result.country }}</h4>
+        <p class="weather_day">{{ day|safe }}</p>
+        <p class="weather_description">{% if result.data[0].description %}{{ result.data[0].description|safe }}{% endif %}</p>
+        
+        <img class="weather_icon" src="{% if result.data[0].img %}{{ result.data[0].img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if result.data[0].description %} alt="{{ result.data[0].description|safe }}"{% endif %}/>
+        
+        <div class="weather_data">
+            {% if result.data[0].rain %}
+                <p><span>{{ _('Niederschlag:') }}</span> {{ result.data[0].rain|safe }} mm/h</p>
+            {% endif %}
+            {% if result.data[0].snow %}
+                <p><span>{{ _('Schneefall:') }}</span> {{ result.data[0].snow|safe }} mm/h</p>
+            {% endif %}
+            <p><span>{{ _('Temperatur:') }}</span> {{ result.data[0].temperature|safe }}&deg;C</p>
+            <p><span>{{ _('Humidity:') }}</span> {{ result.data[0].humidity|safe }}%</p>
+            <p><span>{{ _('Windgeschwindigkeit:') }}</span> {{ result.data[0].windspeed|safe }} km/h</p>
+            
+        </div>
+    </div>
     
     <div class="weathergraph">
         <div class="placeholder" style="width:600px;height:300px;"></div>
@@ -24,12 +49,7 @@
     {% set current_day_temp_min = result.data[0].temperature %}
     {% set current_day_temp_max = result.data[0].temperature %}
     
-    <table>
-    <th>Picture</th>
-    <th>Description</th>
-    <th>Date</th>
-    <th>Temperature max</th>
-    <th>Temperature min</th>
+    <div class="weather_overview">
     {% for data in result.data %}
         {% if data.temperature < current_day_temp_min %}
             {% set current_day_temp_min = data.temperature %}
@@ -42,30 +62,18 @@
         {% endif %}
         
         {% if current_day_date != data.datetime.date()%}
-            <tr>
-                <td><img src="{% if current_day_noon.img %}{{ current_day_noon.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if current_day_noon.description %} alt="{{ current_day_noon.description }}"{% endif %}/></td>
-                <td>{% if current_day_noon.description %}{{ current_day_noon.description }}{% endif %}</td>
-                <td>{{ current_day_noon.datetime }}</td>
-                <td>{{ current_day_temp_max }} °C</td>
-                <td>{{ current_day_temp_min }} °C</td>
-            </tr>
+            {{ weather_icon(current_day_temp_max, current_day_temp_min, current_day_noon.img, current_day_noon.description, current_day_noon.datetime) }}
+
             {% set current_day_noon = data %}
             {% set current_day_temp_min = data.temperature %}
             {% set current_day_temp_max = data.temperature %}
             {% set current_day_date = data.datetime.date() %}
         {% endif %}
         {%if loop.last %}
-            <tr>
-                <td><img src="{% if current_day_noon.img %}{{ current_day_noon.img }}{% else%}static/img/weather/unknow.png{% endif %}"{% if current_day_noon.description %} alt="{{ current_day_noon.description }}"{% endif %}/></td>
-                <td>{% if current_day_noon.description %}{{ current_day_noon.description }}{% endif %}</td>
-                <td>{{ current_day_noon.datetime }}</td>
-                <td>{{ current_day_temp_max }} °C</td>
-                <td>{{ current_day_temp_min }} °C</td>
-            </tr>
+            {{ weather_icon(current_day_temp_max, current_day_temp_min, current_day_noon.img, current_day_noon.description, current_day_noon.datetime) }}
         {% endif %}
     {% endfor %}
-    </table>
-	
+    </div>
     <p class="url">{{ result.pretty_url }}</p>
     
     <script class="raw_data" type="text/json">
