@@ -1,0 +1,57 @@
+/*
+ * searx, A privacy-respecting, hackable metasearch engine
+ */
+
+#bigmap {
+    bottom: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 60px;
+    width: 100%;
+    border-top: 1px solid #CCCCCC;
+    
+    #map {
+        margin-right: auto;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+        background: none repeat scroll 0 0 #DDDDDD;
+    }
+    
+    #map-ui {
+        background: none repeat scroll 0 0 #FFFFFF;
+        border-left: 1px solid #CCCCCC;
+        display: none;
+        float: right;
+        height: 100%;
+        overflow: auto;
+        position: relative;
+        width: 350px;
+
+        .map-ui-block {
+            > * {
+                margin: 10px;
+            }
+
+            .map-ui-header {
+                background: none repeat scroll 0 0 #F4F4FF;
+                border-bottom: 1px solid #CCCCCC;
+                margin: 0;
+                padding: 10px 20px;
+                position: relative;
+                z-index: inherit !important;    
+              
+                h3 {
+                    margin: 0;         
+                }
+                .map-ui-close {
+                    float: right;
+                }
+            }
+        }
+    }
+}
+
+@media screen and (max-width: @results-width) {
+
+}

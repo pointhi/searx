@@ -235,6 +235,14 @@ def index():
         suggestions=search.suggestions
     )
 
+@app.route('/map/search', methods=['GET', 'POST'])
+@app.route('/map', methods=['GET', 'POST'])
+def map():
+    """Render map page."""
+
+    return render(
+        'map.html',map=True
+    )
 
 @app.route('/about', methods=['GET'])
 def about():

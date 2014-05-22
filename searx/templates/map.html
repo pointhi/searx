@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ q }} - {% endblock %}
+{% block content %}
+<div class="right"><a href="{{ url_for('preferences') }}" id="preferences"><span>preferences</span></a></div>
+<div class="small search center">
+    {% include 'map_search.html' %}
+</div>
+<div id="bigmap">
+    <div id="map-ui" style="display: none;">
+        <div id="bigmap-routemachine" class="map-ui-block" style="display: none;">
+            <div class="map-ui-header">
+                <a class="map-ui-close" href="#">{{ _('Close') }}</a>
+                <h3>{{ _('Routing') }}</h3>
+            </div>
+        </div>
+        <div id="bigmap-node-info" class="map-ui-block" style="display: none;">
+            <div class="map-ui-header">
+                <a class="map-ui-close" href="#">{{ _('Close') }}</a>
+                <h3>{{ _('Node') }}</h3>
+            </div>
+        </div>
+    </div>
+    <div id="map">{% include 'javascript_message.html' %}</div>
+    <div style="clear:both"></div>
+</div>
+
+{% endblock %}
