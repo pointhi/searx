@@ -18,8 +18,8 @@ if(searx.autocompleter) {
 
 if(searx.map) {
 
-    searx.map.marker = {};
-    searx.map.marker.routing_from = L.icon({
+    searx.map.icons = {};
+    searx.map.icons.routing_from = L.icon({
         iconUrl: 'static/img/marker/map-routing-from.png',
         shadowUrl: 'static/img/marker/marker-shadow.png',
         iconSize: [25, 41],
@@ -28,7 +28,7 @@ if(searx.map) {
         shadowAnchor: [12, 41]
     });
 
-    searx.map.marker.routing_via = L.icon({
+    searx.map.icons.routing_via = L.icon({
         iconUrl: 'static/img/marker/map-routing-via.png',
         shadowUrl: 'static/img/marker/marker-shadow.png',
         iconSize: [25, 41],
@@ -37,7 +37,7 @@ if(searx.map) {
         shadowAnchor: [12, 41]
     });
 
-    searx.map.marker.routing_to = L.icon({
+    searx.map.icons.routing_to = L.icon({
         iconUrl: 'static/img/marker/map-routing-to.png',
         shadowUrl: 'static/img/marker/marker-shadow.png',
         iconSize: [25, 41],
@@ -46,7 +46,7 @@ if(searx.map) {
         shadowAnchor: [12, 41]
     });
 
-    searx.map.marker.location = L.icon({
+    searx.map.icons.location = L.icon({
         iconUrl: 'static/img/marker/map-location.png',
         shadowUrl: 'static/img/marker/marker-shadow.png',
         iconSize: [25, 41],
@@ -66,21 +66,44 @@ if(searx.map) {
 
         searx.map.functions = {};
 
-        searx.map.functions.set_marker_location = function(location) {
-            //alert('test');
+        searx.map.variables = {};
+
+        searx.map.functions.set_marker_location = function() {
+            searx.map.bigmap.closePopup();
+
+            if(searx.map.variables.marker_default) {
+                searx.map.bigmap.removeLayer(searx.map.variables.marker_default);
             }
 
-        searx.map.bigmap.on('click', function(e) {        
-        var popLocation= e.latlng;
-        var popup = L.popup()
-        .setLatLng(popLocation)
-        .setContent('<table border="0"><tr style="cursor:pointer;" onclick="searx.map.functions.set_marker_location();"><td><img src="' + searx.map.marker.location.options.iconUrl + '"\></td><td>Was ist hier?</td></tr>' +
-                    '<tr style="cursor:pointer;"><td><img src="' + searx.map.marker.routing_from.options.iconUrl + '"\></td><td>Start</td></tr>' +
-                    '<tr style="cursor:pointer;"><td><img src="' + searx.map.marker.routing_via.options.iconUrl + '"\></td><td>über</td></tr>' +
-                    '<tr style="cursor:pointer;"><td><img src="' + searx.map.marker.routing_to.options.iconUrl + '"\></td><td>Ziel</td></tr></table>')
-        .openOn(searx.map.bigmap);        
+            searx.map.variables.marker_default = L.marker(searx.map.variables.popLocation, {
+                icon: searx.map.icons.location,
+                draggable:true
+            });
+            
+            searx.map.bigmap.addLayer(searx.map.variables.marker_default);
+
+            searx.map.variables.marker_default.on('dragend', function(event){
+                var marker = event.target;
+                var position = marker.getLatLng();
+                //alert(position);
+            });
+
+            searx.map.variables.marker_default.on('click', function(event){
+                searx.map.bigmap.removeLayer(searx.map.variables.marker_default);
+            });
+        }
+
+        searx.map.bigmap.on('click', function(e) {
+            searx.map.variables.popLocation = e.latlng;
+            searx.map.variables.popup = L.popup()
+            .setLatLng(searx.map.variables.popLocation)
+            .setContent('<table border="0"><tr style="cursor:pointer;" onclick="searx.map.functions.set_marker_location();"><td><img src="' + searx.map.icons.location.options.iconUrl + '"\></td><td>What is there?</td></tr>' +
+                        '<tr style="cursor:pointer;"><td><img src="' + searx.map.icons.routing_from.options.iconUrl + '"\></td><td>From</td></tr>' +
+                        //'<tr style="cursor:pointer;"><td><img src="' + searx.map.icons.routing_via.options.iconUrl + '"\></td><td>Via</td></tr>' +
+                        '<tr style="cursor:pointer;"><td><img src="' + searx.map.icons.routing_to.options.iconUrl + '"\></td><td>To</td></tr></table>')
+            .openOn(searx.map.bigmap);        
         });
-    });  
+    });
 }
 
 (function (w, d) {
