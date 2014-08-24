@@ -8,10 +8,10 @@
     <title>{% block title %}{% endblock %}searx</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" type="text/css" media="screen" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.png') }}?v=2" />
+	<link title="searx" type="application/opensearchdescription+xml" rel="search" href="{{ url_for('opensearch') }}"/>
     {% block styles %}
     {% endblock %}
     {% block head %}
-    <link title="searx" type="application/opensearchdescription+xml" rel="search" href="{{ url_for('opensearch') }}"/>
     {% endblock %}
     <script type="text/javascript">
         searx = {};

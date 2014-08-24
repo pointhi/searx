@@ -29,14 +29,15 @@ def response(resp):
     for res in search_res['list']:
         title = res['title']
         url = res['url']
+        content = ''
         if res['thumbnail_360_url']:
-            content = content_tpl.format(url, res['thumbnail_360_url'])
+            thumbnail = content_tpl.format(url, res['thumbnail_360_url'])
         else:
-            content = ''
+            thumbnail = ''
         if res['description']:
             description = text_content_from_html(res['description'])
             content += description[:500]
-        results.append({'url': url, 'title': title, 'content': content})
+        results.append({'url': url, 'title': title, 'content': content, 'thumbnail': thumbnail ,'template': 'videos.html'})
     return results
 
 

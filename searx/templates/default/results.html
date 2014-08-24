@@ -1,5 +1,14 @@
 {% extends "default/base.html" %}
 {% block title %}{{ q }} - {% endblock %}
+{% block styles %}<link rel="stylesheet"  href="{{ url_for('static', filename='css/video-js.css') }}" type="text/css">{% endblock %}
+{% block head %}<script src="{{ url_for('static', filename='js/video.js') }}"></script>
+<script src="{{ url_for('static', filename='js/videojs_youtube.js') }}"></script>
+<script src="{{ url_for('static', filename='js/videojs_vimeo.js') }}"></script>
+<script src="{{ url_for('static', filename='js/videojs_dailymotion.js') }}"></script>
+<script>
+    videojs.options.flash.swf = "{{ url_for('static', filename='js/video-js.swf') }}";
+	//videojs.plugin('examplePlugin', examplePlugin);
+</script>{% endblock %}
 {% block content %}
 <div class="right"><a href="{{ url_for('preferences') }}" id="preferences"><span>preferences</span></a></div>
 <div class="small search center">
