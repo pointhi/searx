@@ -45,10 +45,11 @@ from urllib import urlencode
 from urlparse import urlparse, urljoin
 from werkzeug.contrib.fixers import ProxyFix
 from flask import (
-    Flask, request, render_template, url_for, Response, make_response,
+    Flask, request, render_template, abort, url_for, Response, make_response,
     redirect, send_from_directory
 )
 from flask.ext.babel import Babel, gettext, format_date
+from jinja2.exceptions import TemplateNotFound
 from searx import settings, searx_dir
 from searx.engines import (
     categories, engines, get_engines_stats, engine_shortcuts
@@ -471,6 +472,18 @@ def about():
     )
 
 
+@app.route('/map', methods=['GET', 'POST'])
+def map():
+    """Render map page"""
+    try:
+        return render(
+            'map.html',
+        )
+    except TemplateNotFound:
+        # throw 404, if template isn't found
+        abort(404)
+
+
 @app.route('/autocompleter', methods=['GET', 'POST'])
 def autocompleter():
     """Return autocompleter results"""
@@ -491,6 +504,7 @@ def autocompleter():
 
     # check if search query is set
     if not query.getSearchQuery():
+        logger.debug('autocompleter: no search query set')
         return '', 400
 
     # run autocompleter

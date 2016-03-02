@@ -13,7 +13,8 @@
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}" type="text/css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/oscar.min.css') }}" type="text/css" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.min.css') }}" type="text/css" />
+
+    {% if template_name == 'map.html' or template_name == 'results.html' %}<link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.min.css') }}" type="text/css" />{% endif %}
     {% for css in styles %}
         <link rel="stylesheet" href="{{ url_for('static', filename=css) }}" type="text/css" />
     {% endfor %}
@@ -35,20 +36,21 @@
 
     <script type="text/javascript">
         searx = {};
-        searx.method = "{{ method or 'POST' }}";
-        searx.autocompleter = {% if autocomplete %}true{% else %}false{% endif %};
+        searx.options = {};
+        searx.options.method = "{{ method or 'POST' }}";
+        searx.options.autocompleter = {% if autocomplete %}true{% else %}false{% endif %};
     </script>
     <noscript>
         <style type="text/css">
             .tab-content > .active_if_nojs, .active_if_nojs {display: block !important; visibility: visible !important;}
             .margin_top_if_nojs {margin-top: 20px;}
             .hide_if_nojs {display: none !important;overflow:none !important;}
-            .disabled_if_nojs {pointer-events: none; cursor: default; text-decoration: line-through;}
+            .disabled_if_nojs {pointer-events: none; cursor: default; text-decoration: line-through;} 
         </style>
     </noscript>
 </head>
 <body>
-    <div class="container">
+    {% if template_name != 'map.html' %}<div class="container">{% endif %}
     {% include 'oscar/navbar.html' %}
 
     {% block site_alert_error %}
@@ -70,7 +72,8 @@
     {% block content %}
     {% endblock %}
 
-    </div>
+    {% if template_name == 'map.html' %}</div>{% endif %}
+    {% block footer_div %}
     <div class="footer">
         <div class="container">
             {% block footer %}
@@ -78,11 +81,13 @@
             <p class="text-muted">{{ _('Powered by') }} <a href="https://github.com/asciimoo/searx">searx</a> - {{ searx_version }} - {{ _('a privacy-respecting, hackable metasearch engine') }}</p>
         </div>
     </div>
+    {% endblock %}
     <script src="{{ url_for('static', filename='js/jquery-1.11.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     {% if autocomplete %}<script src="{{ url_for('static', filename='js/typeahead.bundle.min.js') }}"></script>{% endif %}
-    <script src="{{ url_for('static', filename='js/require-2.1.15.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/searx.min.js') }}"></script>
+    {% if template_name == 'map.html' or template_name == 'results.html' %}<script src="{{ url_for('static', filename='js/leaflet-0.7.3.min.js') }}"></script>
+    {% else %}<script>L = {};L.Control = function() {};</script>{% endif %}
+    <script src="{{ url_for('static', filename='js/oscar.min.js') }}?v=2"></script>
     {% for script in scripts %}
         <script src="{{ url_for('static', filename=script) }}"></script>
     {% endfor %}
