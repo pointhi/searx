@@ -34,6 +34,14 @@ outgoing: # communication with search engines
 #        - 1.1.1.2
 
 engines:
+  - name : arch linux wiki
+    engine : archlinux
+    shortcut : al
+
+  - name : base
+    engine : base
+    shortcut : bs
+
   - name : wikipedia
     engine : mediawiki
     shortcut : wp

@@ -409,17 +409,21 @@ def index():
 
         # TODO, check if timezone is calculated right
         if 'publishedDate' in result:
-            result['pubdate'] = result['publishedDate'].strftime('%Y-%m-%d %H:%M:%S%z')
-            if result['publishedDate'].replace(tzinfo=None) >= datetime.now() - timedelta(days=1):
-                timedifference = datetime.now() - result['publishedDate'].replace(tzinfo=None)
-                minutes = int((timedifference.seconds / 60) % 60)
-                hours = int(timedifference.seconds / 60 / 60)
-                if hours == 0:
-                    result['publishedDate'] = gettext(u'{minutes} minute(s) ago').format(minutes=minutes)
-                else:
-                    result['publishedDate'] = gettext(u'{hours} hour(s), {minutes} minute(s) ago').format(hours=hours, minutes=minutes)  # noqa
+            try:  # test if publishedDate >= 1900 (datetime module bug)
+                result['pubdate'] = result['publishedDate'].strftime('%Y-%m-%d %H:%M:%S%z')
+            except ValueError:
+                result['publishedDate'] = None
             else:
-                result['publishedDate'] = format_date(result['publishedDate'])
+                if result['publishedDate'].replace(tzinfo=None) >= datetime.now() - timedelta(days=1):
+                    timedifference = datetime.now() - result['publishedDate'].replace(tzinfo=None)
+                    minutes = int((timedifference.seconds / 60) % 60)
+                    hours = int(timedifference.seconds / 60 / 60)
+                    if hours == 0:
+                        result['publishedDate'] = gettext(u'{minutes} minute(s) ago').format(minutes=minutes)
+                    else:
+                        result['publishedDate'] = gettext(u'{hours} hour(s), {minutes} minute(s) ago').format(hours=hours, minutes=minutes)  # noqa
+                else:
+                    result['publishedDate'] = format_date(result['publishedDate'])
 
     if search.request_data.get('format') == 'json':
         return Response(json.dumps({'query': search.query,
@@ -507,7 +511,7 @@ def autocompleter():
         logger.debug('autocompleter: no search query set')
         return '', 400
 
-    # run autocompleter
+    # get autocompleter
     completer = autocomplete_backends.get(request.cookies.get('autocomplete', settings['search']['autocomplete']))
 
     # parse searx specific autocompleter results like !bang
@@ -515,8 +519,14 @@ def autocompleter():
 
     # normal autocompletion results only appear if max 3 inner results returned
     if len(raw_results) <= 3 and completer:
+        # get language from cookie
+        language = request.cookies.get('language')
+        if not language or language == 'all':
+            language = 'en'
+        else:
+            language = language.split('_')[0]
         # run autocompletion
-        raw_results.extend(completer(query.getSearchQuery()))
+        raw_results.extend(completer(query.getSearchQuery(), language))
 
     # parse results (write :language and !engine back to result string)
     results = []
