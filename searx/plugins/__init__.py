@@ -75,9 +75,9 @@ class PluginStore():
 
 plugins = PluginStore()
 plugins.register(https_rewrite)
+plugins.register(geodata_parser)
 plugins.register(open_results_on_new_tab)
 plugins.register(self_info)
-plugins.register(geodata_parser)
 plugins.register(search_on_category_select)
 plugins.register(tracker_url_remover)
 plugins.register(spellchecker)

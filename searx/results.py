@@ -117,6 +117,10 @@ class ResultContainer(object):
         self.results[engine_name].extend(results)
 
         for i, result in enumerate(results):
+            try:
+                result['url'] = result['url'].decode('utf-8')
+            except:
+                pass
             position = i + 1
             self._merge_result(result, position)
 
