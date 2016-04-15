@@ -23,7 +23,7 @@ from searx.engines import (
     categories, engines
 )
 from searx.languages import language_codes
-from searx.utils import gen_useragent, get_blocked_engines
+from searx.utils import gen_useragent
 from searx.query import Query
 from searx.results import ResultContainer
 from searx import logger
@@ -140,15 +140,13 @@ class Search(object):
         self.lang = 'all'
 
         # set blocked engines
-        self.blocked_engines = get_blocked_engines(engines, request.cookies)
+        self.disabled_engines = request.preferences.engines.get_disabled()
 
         self.result_container = ResultContainer()
         self.request_data = {}
 
         # set specific language if set
-        if request.cookies.get('language')\
-           and request.cookies['language'] in (x[0] for x in language_codes):
-            self.lang = request.cookies['language']
+        self.lang = request.preferences.get_value('language')
 
         # set request method
         if request.method == 'POST':
@@ -169,7 +167,7 @@ class Search(object):
 
         # parse query, if tags are set, which change
         # the serch engine or search-language
-        query_obj = Query(self.request_data['q'], self.blocked_engines)
+        query_obj = Query(self.request_data['q'], self.disabled_engines)
         query_obj.parse_query()
 
         # set query
@@ -229,8 +227,7 @@ class Search(object):
             # using user-defined default-configuration which
             # (is stored in cookie)
             if not self.categories:
-                cookie_categories = request.cookies.get('categories', '')
-                cookie_categories = cookie_categories.split(',')
+                cookie_categories = request.preferences.get_value('categories')
                 for ccateg in cookie_categories:
                     if ccateg in categories:
                         self.categories.append(ccateg)
@@ -246,7 +243,7 @@ class Search(object):
                 self.engines.extend({'category': categ,
                                      'name': engine.name}
                                     for engine in categories[categ]
-                                    if (engine.name, categ) not in self.blocked_engines)
+                                    if (engine.name, categ) not in self.disabled_engines)
 
         # remove suspended engines
         self.engines = [e for e in self.engines
@@ -294,11 +291,8 @@ class Search(object):
             else:
                 request_params['language'] = self.lang
 
-            try:
-                # 0 = None, 1 = Moderate, 2 = Strict
-                request_params['safesearch'] = int(request.cookies.get('safesearch'))
-            except Exception:
-                request_params['safesearch'] = settings['search']['safe_search']
+            # 0 = None, 1 = Moderate, 2 = Strict
+            request_params['safesearch'] = request.preferences.get_value('safesearch')
 
             # update request parameters dependent on
             # search-engine (contained in engines folder)
