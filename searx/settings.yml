@@ -21,6 +21,8 @@ ui:
 outgoing: # communication with search engines
     request_timeout : 2.0 # seconds
     useragent_suffix : "" # suffix of searx_useragent, could contain informations like an email address to the administrator
+    pool_connections : 100 # Number of different hosts
+    pool_maxsize : 10 # Number of simultaneous requests by host
 # uncomment below section if you want to use a proxy
 # see http://docs.python-requests.org/en/latest/user/advanced/#proxies
 # SOCKS proxies are not supported : see https://github.com/kennethreitz/requests/pull/478
@@ -43,10 +45,9 @@ engines:
     shortcut : bs
 
   - name : wikipedia
-    engine : mediawiki
+    engine : wikipedia
     shortcut : wp
     base_url : 'https://{language}.wikipedia.org/'
-    number_of_results : 1
 
   - name : bing
     engine : bing
@@ -93,6 +94,7 @@ engines:
   - name : ddg definitions
     engine : duckduckgo_definitions
     shortcut : ddd
+    disabled : True
 
   - name : digg
     engine : digg
