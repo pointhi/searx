@@ -368,8 +368,8 @@ def index():
             'index.html',
         )
 
-    # Because of abuse, I deactivate format=rss on my engine with this code
-    if search.request_data.get('format') == 'rss':
+    # Because of abuse, I deactivate format=rss for get requests on my engine
+    if request.args and request.args.get('format') == 'rss':
         return render(
             'index.html',
         )
