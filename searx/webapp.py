@@ -368,6 +368,12 @@ def index():
             'index.html',
         )
 
+    # Because of abuse, I deactivate format=rss on my engine with this code
+    if search.request_data.get('format') == 'rss':
+        return render(
+            'index.html',
+        )
+
     try:
         search = Search(request)
     except:
