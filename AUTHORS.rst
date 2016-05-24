@@ -43,3 +43,11 @@ generally made searx better:
 - Kang-min Liu
 - Kirill Isakov
 - Guilhem Bonnefille
+- Marc Abonce Seguin
+
+- @jibe-b
+- Christian Pietsch @pietsch
+- @Maxqia
+- Ashutosh Das @pyprism
+- YuLun Shih @imZack
+- Dmitry Mikhirev @mikhirev
