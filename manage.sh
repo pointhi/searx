@@ -90,6 +90,8 @@ Commands
 "
 }
 
-[ "$(command -V "$ACTION" | grep ' function$')" = "" ] \
-    && help "action not found" \
-    || $ACTION
+if [ -n "$(type -t $ACTION)" ] && [ "$(type -t $ACTION)" = function ]; then
+     $ACTION
+ else
+     help "action not found"
+fi
