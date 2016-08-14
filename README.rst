@@ -15,10 +15,10 @@ Installation
 ~~~~~~~~~~~~
 
 -  clone source:
-   ``git clone git@github.com:asciimoo/searx.git && cd searx``
+   ``git clone https://github.com/asciimoo/searx.git && cd searx``
 -  install dependencies: ``./manage.sh update_packages``
 -  edit your
-   `settings.yml <https://github.com/asciimoo/searx/blob/master/settings.yml>`__
+   `settings.yml <https://github.com/asciimoo/searx/blob/master/searx/settings.yml>`__
    (set your ``secret_key``!)
 -  run ``python searx/webapp.py`` to start the application
 

@@ -21,6 +21,8 @@ ui:
 outgoing: # communication with search engines
     request_timeout : 2.0 # seconds
     useragent_suffix : "" # suffix of searx_useragent, could contain informations like an email address to the administrator
+    pool_connections : 100 # Number of different hosts
+    pool_maxsize : 10 # Number of simultaneous requests by host
 # uncomment below section if you want to use a proxy
 # see http://docs.python-requests.org/en/latest/user/advanced/#proxies
 # SOCKS proxies are not supported : see https://github.com/kennethreitz/requests/pull/478
@@ -38,15 +40,25 @@ engines:
     engine : archlinux
     shortcut : al
 
+  - name : archive is
+    engine : xpath
+    search_url : https://archive.is/{query}
+    url_xpath : (//div[@class="TEXT-BLOCK"]/a)/@href
+    title_xpath : (//div[@class="TEXT-BLOCK"]/a)
+    content_xpath : //div[@class="TEXT-BLOCK"]/ul/li
+    categories : general
+    timeout : 7.0
+    disabled : True
+    shortcut : ai
+
   - name : base
     engine : base
     shortcut : bs
 
   - name : wikipedia
-    engine : mediawiki
+    engine : wikipedia
     shortcut : wp
     base_url : 'https://{language}.wikipedia.org/'
-    number_of_results : 1
 
   - name : bing
     engine : bing
@@ -60,9 +72,31 @@ engines:
     engine : bing_news
     shortcut : bin
 
+  - name : bitbucket
+    engine : xpath
+    paging : True
+    search_url : https://bitbucket.org/repo/all/{pageno}?name={query}
+    url_xpath : //article[@class="repo-summary"]//a[@class="repo-link"]/@href
+    title_xpath : //article[@class="repo-summary"]//a[@class="repo-link"]
+    content_xpath : //article[@class="repo-summary"]/p
+    categories : it
+    timeout : 4.0
+    disabled : True
+    shortcut : bb
+
   - name : btdigg
     engine : btdigg
     shortcut : bt
+    
+  - name : crossref
+    engine : json_engine
+    paging : True
+    search_url : http://search.crossref.org/dois?q={query}&page={pageno}
+    url_query : doi
+    title_query : title
+    content_query : fullCitation
+    categories : science
+    shortcut : cr
 
   - name : currency
     engine : currency_convert
@@ -81,18 +115,35 @@ engines:
   - name : ddg definitions
     engine : duckduckgo_definitions
     shortcut : ddd
+    weight : 2
+    disabled : True
 
   - name : digg
     engine : digg
     shortcut : dg
 
+  - name : erowid
+    engine : xpath
+    paging : True
+    first_page_num : 0
+    page_size : 30
+    search_url : https://www.erowid.org/search.php?q={query}&s={pageno}
+    url_xpath : //dl[@class="results-list"]/dt[@class="result-title"]/a/@href
+    title_xpath : //dl[@class="results-list"]/dt[@class="result-title"]/a/text()
+    content_xpath : //dl[@class="results-list"]/dd[@class="result-details"]
+    categories : general
+    shortcut : ew
+    disabled : True
+
   - name : wikidata
     engine : wikidata
     shortcut : wd
+    weight : 2
 
   - name : duckduckgo
     engine : duckduckgo
     shortcut : ddg
+    disabled : True
 
 # api-key required: http://www.faroo.com/hp/api/api.html#key
 #  - name : faroo
@@ -107,6 +158,11 @@ engines:
   - name : 1x
     engine : www1x
     shortcut : 1x
+    disabled : True
+
+  - name : fdroid
+    engine : fdroid
+    shortcut : fd
     disabled : True
 
   - name : flickr
@@ -129,6 +185,18 @@ engines:
     shortcut : gb
     disabled: True
 
+  - name : gitlab
+    engine : xpath
+    paging : True
+    search_url : https://gitlab.com/search?page={pageno}&search={query}
+    url_xpath : //li[@class="project-row"]//a[@class="project"]/@href
+    title_xpath : //li[@class="project-row"]//span[contains(@class, "project-full-name")]
+    content_xpath : //li[@class="project-row"]//div[@class="description"]/p
+    categories : it
+    shortcut : gl
+    timeout : 5.0
+    disabled : True
+
   - name : github
     engine : github
     shortcut : gh
@@ -144,6 +212,20 @@ engines:
   - name : google news
     engine : google_news
     shortcut : gon
+
+  - name : google scholar
+    engine : xpath
+    paging : True
+    search_url : https://scholar.google.com/scholar?start={pageno}&q={query}&hl=en&as_sdt=0,5&as_vis=1
+    results_xpath : //div[@class="gs_r"]/div[@class="gs_ri"]
+    url_xpath : .//h3/a/@href
+    title_xpath : .//h3/a
+    content_xpath : .//div[@class="gs_rs"]
+    suggestion_xpath : //div[@id="gs_qsuggest"]/ul/li
+    page_size : 10
+    first_page_num : 0
+    categories : science
+    shortcut : gos
 
   - name : google play apps
     engine        : xpath
@@ -175,13 +257,73 @@ engines:
     shortcut : gps
     disabled : True
 
+  - name : geektimes
+    engine : xpath
+    paging : True
+    search_url : https://geektimes.ru/search/page{pageno}/?q={query}
+    url_xpath : //div[@class="search_results"]//a[@class="post__title_link"]/@href
+    title_xpath : //div[@class="search_results"]//a[@class="post__title_link"]
+    content_xpath : //div[@class="search_results"]//div[contains(@class, "content")]
+    categories : it
+    timeout : 4.0
+    disabled : True
+    shortcut : gt
+
+  - name : habrahabr
+    engine : xpath
+    paging : True
+    search_url : https://habrahabr.ru/search/page{pageno}/?q={query}
+    url_xpath : //div[@class="search_results"]//a[@class="post_title"]/@href
+    title_xpath : //div[@class="search_results"]//a[@class="post_title"]
+    content_xpath : //div[@class="search_results"]//div[contains(@class, "content")]
+    categories : it
+    timeout : 4.0
+    disabled : True
+    shortcut : habr
+
+  - name : ina
+    engine : ina
+    shortcut : in
+    timeout : 6.0
+    disabled : True
+
+  - name : microsoft academic
+    engine : json_engine
+    paging : True
+    search_url : https://academic.microsoft.com/api/search/GetEntityResults?query=%40{query}%40&filters=&offset={pageno}&limit=8&correlationId=undefined
+    results_query : results
+    url_query : u
+    title_query : dn
+    content_query : d
+    page_size : 8
+    first_page_num : 0
+    categories : science
+    shortcut : ma
+
   - name : mixcloud
     engine : mixcloud
     shortcut : mc
 
+  - name : nyaa
+    engine : nyaa
+    shortcut : nt
+    disabled : True
+
   - name : openstreetmap
     engine : openstreetmap
     shortcut : osm
+
+  - name : openrepos
+    engine : xpath
+    paging : True
+    search_url : https://openrepos.net/search/node/{query}?page={pageno}
+    url_xpath : //li[@class="search-result"]//h3[@class="title"]/a/@href
+    title_xpath : //li[@class="search-result"]//h3[@class="title"]/a
+    content_xpath : //li[@class="search-result"]//div[@class="search-snippet-info"]//p[@class="search-snippet"]
+    categories : files
+    timeout : 4.0
+    disabled : True
+    shortcut : or
 
   - name : photon
     engine : photon
@@ -213,9 +355,17 @@ engines:
     shortcut : qws
     categories : social media
 
-  - name : kickass
-    engine : kickass
-    shortcut : ka
+  - name : reddit
+    engine : reddit
+    shortcut : re
+    page_size : 25
+    timeout : 10.0
+    disabled : True
+
+  - name : scanr_structures
+    shortcut: scs
+    engine : scanr_structures
+    disabled : True
 
   - name : soundcloud
     engine : soundcloud
@@ -263,6 +413,17 @@ engines:
     engine : swisscows
     shortcut : sw
     disabled : True
+
+  - name : tokyotoshokan
+    engine : tokyotoshokan
+    shortcut : tt
+    timeout : 6.0
+    disabled : True
+
+  - name : torrentz
+    engine : torrentz
+    timeout : 5.0
+    shortcut : to
 
   - name : twitter
     engine : twitter

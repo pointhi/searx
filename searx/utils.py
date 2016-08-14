@@ -15,14 +15,14 @@ from searx import logger
 
 logger = logger.getChild('utils')
 
-ua_versions = ('33.0',
-               '34.0',
-               '35.0',
-               '36.0',
-               '37.0',
-               '38.0',
-               '39.0',
-               '40.0')
+ua_versions = ('40.0',
+               '41.0',
+               '42.0',
+               '43.0',
+               '44.0',
+               '45.0',
+               '46.0',
+               '47.0')
 
 ua_os = ('Windows NT 6.3; WOW64',
          'X11; Linux x86_64',
@@ -63,7 +63,7 @@ def highlight_content(content, query):
         regex_parts = []
         for chunk in query.split():
             if len(chunk) == 1:
-                regex_parts.append(u'\W+{0}\W+'.format(re.escape(chunk)))
+                regex_parts.append(u'\\W+{0}\\W+'.format(re.escape(chunk)))
             else:
                 regex_parts.append(u'{0}'.format(re.escape(chunk)))
         query_regex = u'({0})'.format('|'.join(regex_parts))
@@ -74,6 +74,7 @@ def highlight_content(content, query):
 
 
 class HTMLTextExtractor(HTMLParser):
+
     def __init__(self):
         HTMLParser.__init__(self)
         self.result = []
@@ -205,7 +206,13 @@ def format_date_by_locale(date, locale_string):
     if locale_string == 'all':
         locale_string = settings['ui']['default_locale'] or 'en_US'
 
-    return format_date(date, locale=locale_string)
+    # to avoid crashing if locale is not supported by babel
+    try:
+        formatted_date = format_date(date, locale=locale_string)
+    except:
+        formatted_date = format_date(date, "YYYY-MM-dd")
+
+    return formatted_date
 
 
 def dict_subset(d, properties):
